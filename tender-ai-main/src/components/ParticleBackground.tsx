@@ -38,8 +38,8 @@ const ParticleBackground: React.FC = () => {
     if (!canvas) return;
 
     const particles: Particle[] = [];
-    // Increased particle count for more visual impact
-    const particleCount = Math.min(120, Math.floor((canvas.width * canvas.height) / 12000));
+    // Increased particle count for more eye-catching small particle effect
+    const particleCount = Math.min(150, Math.floor((canvas.width * canvas.height) / 8000));
 
     for (let i = 0; i < particleCount; i++) {
       const particleTypes: ('star' | 'cosmic' | 'nebula')[] = ['star', 'cosmic', 'nebula'];
@@ -49,24 +49,24 @@ const ParticleBackground: React.FC = () => {
         id: i,
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: type === 'star' ? Math.random() * 2 + 0.5 : 
-              type === 'cosmic' ? Math.random() * 4 + 2 : 
-              Math.random() * 6 + 3, // Different sizes for different types
-        speed: Math.random() * 1.2 + 0.4, // Faster movement for more dynamic effect
+        size: type === 'star' ? Math.random() * 1.5 + 0.5 : 
+              type === 'cosmic' ? Math.random() * 2.5 + 1 : 
+              Math.random() * 3.5 + 1.5, // Smaller sizes for more delicate effect
+        speed: Math.random() * 1.5 + 0.5, // Slightly faster for more dynamic movement
         angle: Math.random() * Math.PI * 2,
-        opacity: Math.random() * 0.8 + 0.15, // 0.15 to 0.95 opacity
-        revolutionRadius: type === 'star' ? Math.random() * 60 + 20 :
-                         type === 'cosmic' ? Math.random() * 120 + 40 :
-                         Math.random() * 180 + 60, // Varying orbit sizes
-        revolutionSpeed: (Math.random() * 0.03 + 0.01) * (Math.random() > 0.5 ? 1 : -1), // Faster revolution
+        opacity: Math.random() * 0.9 + 0.2, // Higher opacity range for more visibility
+        revolutionRadius: type === 'star' ? Math.random() * 40 + 15 :
+                         type === 'cosmic' ? Math.random() * 80 + 30 :
+                         Math.random() * 120 + 50, // Smaller, tighter orbits
+        revolutionSpeed: (Math.random() * 0.04 + 0.015) * (Math.random() > 0.5 ? 1 : -1), // Faster revolution
         centerX: Math.random() * canvas.width,
         centerY: Math.random() * canvas.height,
-        glowIntensity: type === 'star' ? Math.random() * 0.9 + 0.5 :
-                      type === 'cosmic' ? Math.random() * 0.7 + 0.3 :
-                      Math.random() * 0.5 + 0.2, // Enhanced glow variation
+        glowIntensity: type === 'star' ? Math.random() * 1.2 + 0.8 :
+                      type === 'cosmic' ? Math.random() * 0.9 + 0.5 :
+                      Math.random() * 0.7 + 0.3, // Enhanced glow for eye-catching effect
         particleType: type,
-        twinkleSpeed: Math.random() * 0.05 + 0.02, // Twinkling effect
-        driftSpeed: Math.random() * 0.3 + 0.1, // Cosmic drift
+        twinkleSpeed: Math.random() * 0.08 + 0.03, // Faster twinkling
+        driftSpeed: Math.random() * 0.4 + 0.15, // More active cosmic drift
       });
     }
 
@@ -108,71 +108,81 @@ const ParticleBackground: React.FC = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particlesRef.current.forEach((particle) => {
-        // Update revolution angle for orbiting motion
+        // Update revolution angle for smooth orbiting motion
         particle.angle += particle.revolutionSpeed;
 
-        // Universe-like 135-degree directional movement
-        const directionAngle = (135 * Math.PI) / 180; // Keep 135 degrees as requested
+        // Perfect 135-degree universe-like directional movement
+        const directionAngle = (135 * Math.PI) / 180; // Exact 135 degrees
         const directionX = Math.cos(directionAngle);
         const directionY = Math.sin(directionAngle);
 
-        // Cosmic drift and wave motion for universe effect
-        const cosmicDrift = Math.sin(currentTime * particle.driftSpeed + particle.id * 0.1) * 0.5;
-        const waveOffset = Math.sin(currentTime * 0.001 + particle.id * 0.1) * 0.3;
+        // Enhanced cosmic drift for universe-like flowing motion
+        const cosmicFlow = Math.sin(currentTime * particle.driftSpeed + particle.id * 0.2) * 0.6;
+        const universalDrift = Math.cos(currentTime * 0.0008 + particle.id * 0.15) * 0.4;
+        const galaxySpiral = Math.sin(currentTime * 0.0005 + particle.angle) * 0.2;
         
-        particle.centerX += (directionX + waveOffset + cosmicDrift * 0.3) * particle.speed;
-        particle.centerY += (directionY + waveOffset + cosmicDrift * 0.2) * particle.speed;
+        // Main 135-degree movement with universe-like flow patterns
+        particle.centerX += (directionX + cosmicFlow * 0.3 + universalDrift * 0.2) * particle.speed;
+        particle.centerY += (directionY + cosmicFlow * 0.2 + galaxySpiral * 0.3) * particle.speed;
 
-        // Enhanced orbiting motion with universe-like rotation
-        const orbitX = Math.cos(particle.angle) * particle.revolutionRadius;
-        const orbitY = Math.sin(particle.angle) * particle.revolutionRadius;
+        // Enhanced orbiting motion with perfect 135-degree universe rotation
+        const orbitRadius = particle.revolutionRadius * (1 + Math.sin(currentTime * 0.001 + particle.id) * 0.1);
+        const orbitX = Math.cos(particle.angle) * orbitRadius;
+        const orbitY = Math.sin(particle.angle) * orbitRadius;
         
-        // Apply 135-degree rotation to the orbit for cosmic spiral effect
+        // Apply precise 135-degree rotation to create universe spiral effect
         const rotatedOrbitX = orbitX * Math.cos(directionAngle) - orbitY * Math.sin(directionAngle);
         const rotatedOrbitY = orbitX * Math.sin(directionAngle) + orbitY * Math.cos(directionAngle);
         
-        particle.x = particle.centerX + rotatedOrbitX;
-        particle.y = particle.centerY + rotatedOrbitY;
-
-        // Cosmic twinkling and pulsing effects
-        const twinkle = Math.sin(currentTime * particle.twinkleSpeed + particle.id * 0.2);
-        const basePulse = Math.sin(currentTime * 0.002 + particle.id * 0.15);
-        const cosmicPulse = Math.sin(currentTime * 0.0015 + particle.id * 0.08) * 0.4;
+        // Add subtle universe wobble for more organic movement
+        const universeWobble = Math.sin(currentTime * particle.twinkleSpeed + particle.id) * 2;
         
-        // Different opacity patterns for different particle types
+        particle.x = particle.centerX + rotatedOrbitX + universeWobble;
+        particle.y = particle.centerY + rotatedOrbitY + universeWobble;
+
+        // Enhanced twinkling patterns for eye-catching effect
+        const primaryTwinkle = Math.sin(currentTime * particle.twinkleSpeed + particle.id * 0.3);
+        const secondaryTwinkle = Math.cos(currentTime * particle.twinkleSpeed * 1.5 + particle.id * 0.2) * 0.5;
+        const universePulse = Math.sin(currentTime * 0.002 + particle.id * 0.1) * 0.3;
+        
+        // Different opacity patterns for eye-catching universe effect
         if (particle.particleType === 'star') {
-          particle.opacity = 0.3 + 0.7 * ((twinkle + 1) / 2); // Strong twinkling
+          particle.opacity = 0.4 + 0.6 * ((primaryTwinkle + secondaryTwinkle + 2) / 3); // Intense twinkling
         } else if (particle.particleType === 'cosmic') {
-          particle.opacity = 0.2 + 0.6 * ((basePulse + cosmicPulse + 2) / 4); // Smooth pulsing
+          particle.opacity = 0.3 + 0.7 * ((primaryTwinkle + universePulse + 2) / 3); // Cosmic pulsing
         } else { // nebula
-          particle.opacity = 0.1 + 0.4 * ((basePulse + 2) / 3); // Gentle breathing
+          particle.opacity = 0.2 + 0.5 * ((universePulse + 1) / 2); // Gentle universe breathing
         }
 
-        // Wrap around screen edges with cosmic effect
-        const buffer = 200;
+        // Universe-style screen wrapping with cosmic regeneration
+        const buffer = 150;
         if (particle.centerX > canvas.width + buffer) {
           particle.centerX = -buffer;
-          particle.centerY = Math.random() * canvas.height; // Randomize Y when wrapping
+          particle.centerY = Math.random() * canvas.height;
+          particle.angle = Math.random() * Math.PI * 2; // Randomize angle for variety
         }
         if (particle.centerY > canvas.height + buffer) {
           particle.centerY = -buffer;
-          particle.centerX = Math.random() * canvas.width; // Randomize X when wrapping
+          particle.centerX = Math.random() * canvas.width;
+          particle.angle = Math.random() * Math.PI * 2;
         }
         if (particle.centerX < -buffer) {
           particle.centerX = canvas.width + buffer;
           particle.centerY = Math.random() * canvas.height;
+          particle.angle = Math.random() * Math.PI * 2;
         }
         if (particle.centerY < -buffer) {
           particle.centerY = canvas.height + buffer;
           particle.centerX = Math.random() * canvas.width;
+          particle.angle = Math.random() * Math.PI * 2;
         }
 
-        // Draw particle with cosmic universe effects
+        // Draw particles as pure white with eye-catching glow effects
         ctx.save();
         
         if (particle.particleType === 'star') {
-          // Star effect - bright with sharp twinkle
-          ctx.shadowBlur = 20;
+          // Bright white star with intense sparkle effect
+          ctx.shadowBlur = 25;
           ctx.shadowColor = `rgba(255, 255, 255, ${particle.opacity * particle.glowIntensity})`;
           
           ctx.beginPath();
@@ -180,45 +190,45 @@ const ParticleBackground: React.FC = () => {
           ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
           ctx.fill();
 
-          // Bright core
-          ctx.shadowBlur = 8;
+          // Intense white core for sparkle
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = `rgba(255, 255, 255, 1)`;
           ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size * 0.3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(particle.opacity * 1.8, 1)})`;
+          ctx.arc(particle.x, particle.y, particle.size * 0.2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(particle.opacity * 2, 1)})`;
           ctx.fill();
           
         } else if (particle.particleType === 'cosmic') {
-          // Cosmic particle - medium glow with color variation
-          const blueShift = Math.sin(currentTime * 0.001 + particle.id) * 0.3 + 0.7;
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = `rgba(${255 * blueShift}, ${255 * blueShift}, 255, ${particle.opacity * particle.glowIntensity})`;
+          // Pure white cosmic particle with medium glow
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = `rgba(255, 255, 255, ${particle.opacity * particle.glowIntensity})`;
           
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${255 * blueShift}, ${255 * blueShift}, 255, ${particle.opacity})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
           ctx.fill();
 
-          // Soft inner glow
-          ctx.shadowBlur = 6;
+          // Bright white inner glow
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = `rgba(255, 255, 255, ${particle.opacity * 0.9})`;
           ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size * 0.6, 0, Math.PI * 2);
+          ctx.arc(particle.x, particle.y, particle.size * 0.5, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity * 0.8})`;
           ctx.fill();
           
         } else { // nebula
-          // Nebula effect - large soft glow
-          const colorShift = Math.sin(currentTime * 0.0008 + particle.id * 0.1) * 0.4 + 0.6;
-          ctx.shadowBlur = 25;
-          ctx.shadowColor = `rgba(${255 * colorShift}, 255, ${255 * colorShift}, ${particle.opacity * particle.glowIntensity * 0.6})`;
+          // Soft white nebula with gentle glow
+          ctx.shadowBlur = 30;
+          ctx.shadowColor = `rgba(255, 255, 255, ${particle.opacity * particle.glowIntensity * 0.7})`;
           
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${255 * colorShift}, 255, ${255 * colorShift}, ${particle.opacity * 0.6})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity * 0.7})`;
           ctx.fill();
 
-          // Multiple glow layers for nebula effect
-          ctx.shadowBlur = 40;
-          ctx.shadowColor = `rgba(${255 * colorShift}, 255, ${255 * colorShift}, ${particle.opacity * 0.3})`;
+          // Extended white glow for nebula effect
+          ctx.shadowBlur = 45;
+          ctx.shadowColor = `rgba(255, 255, 255, ${particle.opacity * 0.4})`;
           ctx.fill();
         }
 
@@ -243,7 +253,7 @@ const ParticleBackground: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0 opacity-80"
+      className="fixed inset-0 pointer-events-none z-0 opacity-90"
       style={{
         background: 'transparent',
         mixBlendMode: 'screen',
